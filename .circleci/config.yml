@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:18.05.0-ce-git
+    working_directory: /go/src/github.com/revas/animo-service
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          TAG=$CIRCLE_SHA1
+          docker build -t revas/animo-service:$TAG .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push revas/animo-service:$TAG
