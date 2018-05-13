@@ -52,7 +52,8 @@ func main() {
 	}
 
 	endpoints := animo.Endpoints{
-		ResolveAliasesEndpoint: validateToken(animo.MakeResolveAliasesEndpoint(svc)),
+		ResolveAliasesEndpoint: animo.MakeResolveProfilesAliasesEndpoint(svc),
+		InternalGetProfilesEndpoint: animo.MakeInternalGetProfilesEndpoint(svc),
 		GetProfilesEndpoint:    validateToken(animo.MakeGetProfilesEndpoint(svc)),
 		SearchProfilesEndpoint: validateToken(animo.MakeSearchProfilesEndpoint(svc)),
 		UpdateProfilesEndpoint: validateToken(animo.MakeUpdateProfilesEndpoint(svc)),

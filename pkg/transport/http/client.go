@@ -24,20 +24,38 @@ func EncodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 	return nil
 }
 
-func DecodeResolveAliasesResponse(_ context.Context, response *http.Response) (interface{}, error) {
+func DecodeResolveProfilesAliasesResponse(_ context.Context, response *http.Response) (interface{}, error) {
 	if response.StatusCode != http.StatusOK {
 		return nil, errors.New(response.Status)
 	}
-	var resp animo.ResolveAliasesResponse
+	var resp animo.ResolveProfilesAliasesResponse
 	err := json.NewDecoder(response.Body).Decode(&resp)
 	return resp, err
 }
 
-func CreateResolveProfilesAliasesClientEndpoint(url *url.URL) endpoint.Endpoint {
+func DecodeInternalGetProfilesResponse(_ context.Context, response *http.Response) (interface{}, error) {
+	if response.StatusCode != http.StatusOK {
+		return nil, errors.New(response.Status)
+	}
+	var resp animo.InternalGetProfilesResponse
+	err := json.NewDecoder(response.Body).Decode(&resp)
+	return resp, err
+}
+
+func MakeResolveProfilesAliasesClientEndpoint(url *url.URL) endpoint.Endpoint {
 	return khttp.NewClient(
 		"GET",
 		url,
 		EncodeRequest,
-		DecodeResolveAliasesResponse,
+		DecodeResolveProfilesAliasesResponse,
+	).Endpoint()
+}
+
+func MakeInternalGetProfilesClientEndpoint(url *url.URL) endpoint.Endpoint {
+	return khttp.NewClient(
+		"GET",
+		url,
+		EncodeRequest,
+		DecodeInternalGetProfilesResponse,
 	).Endpoint()
 }

@@ -13,7 +13,7 @@ type Profile struct {
 
 type AnimoService interface {
 	GetOrCreateProfile(context context.Context, userIdentity string) (*Profile, error)
-	ResolveAliases(context context.Context, profilesAliases []string) ([]string, error)
+	ResolveProfilesAliases(context context.Context, profilesAliases []string) ([]string, error)
 	GetProfiles(context context.Context, profilesIds []string) ([]*Profile, error)
 	SearchProfiles(context context.Context, filter string) ([]*Profile, error)
 	UpdateProfiles(context context.Context, profilesIds []string, profiles []*Profile) ([]*Profile, error)

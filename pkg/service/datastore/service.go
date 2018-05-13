@@ -33,7 +33,7 @@ func (svc *GoogleDatastoreAnimoService) GetOrCreateProfile(ctx context.Context, 
 	return profile, nil
 }
 
-func (svc *GoogleDatastoreAnimoService) ResolveAliases(context context.Context, profilesAliases []string) ([]string, error) {
+func (svc *GoogleDatastoreAnimoService) ResolveProfilesAliases(context context.Context, profilesAliases []string) ([]string, error) {
 	var profilesIds []string
 	for _, alias := range profilesAliases {
 		var profile *animo.Profile
@@ -89,8 +89,7 @@ func (svc *GoogleDatastoreAnimoService) SearchProfiles(context context.Context, 
 func (svc *GoogleDatastoreAnimoService) UpdateProfiles(ctx context.Context, profilesIds []string, profiles []*animo.Profile) ([]*animo.Profile, error) {
 	profilesKeys := makeDatastoreKeysFromIds(profilesIds)
 
-	var persistedProfiles []*animo.Profile
-	persistedProfiles = make([]*animo.Profile, len(profilesKeys))
+	persistedProfiles := make([]*animo.Profile, len(profilesKeys))
 	err := svc.Client.GetMulti(ctx, profilesKeys, persistedProfiles)
 	if err != nil {
 		return nil, err

@@ -13,8 +13,16 @@ import (
 	"github.com/revas/animo-service/pkg"
 )
 
-func DecodeResolveAliasesRequest(_ context.Context, request *http.Request) (interface{}, error) {
-	var decoded animo.ResolveAliasesRequest
+func DecodeResolveProfilesAliasesRequest(_ context.Context, request *http.Request) (interface{}, error) {
+	var decoded animo.ResolveProfilesAliasesRequest
+	if err := json.NewDecoder(request.Body).Decode(&decoded); err != nil {
+		return nil, err
+	}
+	return decoded, nil
+}
+
+func DecodeInternalGetProfilesRequest(_ context.Context, request *http.Request) (interface{}, error) {
+	var decoded animo.InternalGetProfilesRequest
 	if err := json.NewDecoder(request.Body).Decode(&decoded); err != nil {
 		return nil, err
 	}
@@ -55,9 +63,16 @@ func MakeHandler(logger log.Logger, endpoints animo.Endpoints) http.Handler {
 		kithttp.ServerErrorLogger(logger),
 	}
 
-	resolveAliasesHandler := kithttp.NewServer(
+	resolveProfilesAliasesHandler := kithttp.NewServer(
 		endpoints.ResolveAliasesEndpoint,
-		DecodeResolveAliasesRequest,
+		DecodeResolveProfilesAliasesRequest,
+		EncodeResponse,
+		options...,
+	)
+
+	internalGetProfilesHandler := kithttp.NewServer(
+		endpoints.GetProfilesEndpoint,
+		DecodeInternalGetProfilesRequest,
 		EncodeResponse,
 		options...,
 	)
@@ -85,7 +100,8 @@ func MakeHandler(logger log.Logger, endpoints animo.Endpoints) http.Handler {
 
 	r := mux.NewRouter()
 
-	r.Handle("/animo.ResolveAliases/", resolveAliasesHandler).Methods("POST")
+	r.Handle("/internal/animo.ResolveProfilesAliases/", resolveProfilesAliasesHandler).Methods("POST")
+	r.Handle("/internal/animo.GetProfiles/", internalGetProfilesHandler).Methods("POST")
 	r.Handle("/animo.GetProfiles/", getProfilesHandler).Methods("POST")
 	r.Handle("/animo.SearchProfiles/", searchProfilesHandler).Methods("POST")
 	r.Handle("/animo.UpdateProfiles/", updateProfilesHandler).Methods("POST")

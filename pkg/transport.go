@@ -7,12 +7,21 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-type ResolveAliasesRequest struct {
+type ResolveProfilesAliasesRequest struct {
 	ProfilesAliases []string `json:"profilesAliases"`
 }
 
-type ResolveAliasesResponse struct {
+type ResolveProfilesAliasesResponse struct {
 	ProfilesIds []string `json:"profilesIds"`
+	Err         string   `json:"err,omitempty"`
+}
+
+type InternalGetProfilesRequest struct {
+	ProfilesIds []string `json:"profilesIds"`
+}
+
+type InternalGetProfilesResponse struct {
+	Profiles []*Profile `json:"profiles"`
 	Err         string   `json:"err,omitempty"`
 }
 
@@ -46,26 +55,38 @@ type UpdateProfilesResponse struct {
 
 type Endpoints struct {
 	ResolveAliasesEndpoint endpoint.Endpoint
+	InternalGetProfilesEndpoint endpoint.Endpoint
 	GetProfilesEndpoint    endpoint.Endpoint
 	SearchProfilesEndpoint endpoint.Endpoint
 	UpdateProfilesEndpoint endpoint.Endpoint
 }
 
-func MakeResolveAliasesEndpoint(svc AnimoService) endpoint.Endpoint {
+func MakeResolveProfilesAliasesEndpoint(svc AnimoService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(ResolveAliasesRequest)
-		ids, err := svc.ResolveAliases(ctx, req.ProfilesAliases)
+		req := request.(ResolveProfilesAliasesRequest)
+		ids, err := svc.ResolveProfilesAliases(ctx, req.ProfilesAliases)
 		if err != nil {
-			return ResolveAliasesResponse{[]string{}, err.Error()}, nil
+			return ResolveProfilesAliasesResponse{[]string{}, err.Error()}, nil
 		}
-		return ResolveAliasesResponse{ids, ""}, nil
+		return ResolveProfilesAliasesResponse{ids, ""}, nil
+	}
+}
+
+func MakeInternalGetProfilesEndpoint(svc AnimoService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(InternalGetProfilesRequest)
+		profiles, err := svc.GetProfiles(ctx, req.ProfilesIds)
+		if err != nil {
+			return InternalGetProfilesResponse{[]*Profile{}, err.Error()}, nil
+		}
+		return InternalGetProfilesResponse{profiles, ""}, nil
 	}
 }
 
 func MakeGetProfilesEndpoint(svc AnimoService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(GetProfilesRequest)
-		profilesIds, err := svc.ResolveAliases(ctx, req.ProfilesAliases)
+		profilesIds, err := svc.ResolveProfilesAliases(ctx, req.ProfilesAliases)
 		profiles, err := svc.GetProfiles(ctx, profilesIds)
 		if err != nil {
 			return GetProfilesResponse{[]*Profile{}, err.Error()}, nil
@@ -96,7 +117,7 @@ func MakeUpdateProfilesEndpoint(svc AnimoService) endpoint.Endpoint {
 			return nil, errors.New("aliases and profiles have different lengths")
 		}
 
-		profilesIds, err := svc.ResolveAliases(ctx, req.ProfilesAliases)
+		profilesIds, err := svc.ResolveProfilesAliases(ctx, req.ProfilesAliases)
 		profiles, err := svc.UpdateProfiles(ctx, profilesIds, req.Profiles)
 		if err != nil {
 			return UpdateProfilesResponse{[]*Profile{}, err.Error()}, nil
