@@ -20,7 +20,6 @@ import (
 
 func main() {
 	var (
-		GCPCertificatePath = flag.String("gcp-certificate", "", "Google Cloud Platform certificate .json file to connect with cloud resources. More info on https://cloud.google.com/docs/authentication/production.")
 		GCPProjectID       = flag.String("gcp-project", "", "Google Cloud Platform project ID.")
 		HS256SigningKey    = flag.String("signature-secret", "", "HS256 JWT token signing key.")
 	)
@@ -34,16 +33,6 @@ func main() {
 		logger.Log("error", "Please provide a GCP Project ID and a Token Signing Key.")
 		flag.PrintDefaults()
 		os.Exit(1)
-	}
-
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		if *GCPCertificatePath != "" {
-			os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", *GCPCertificatePath)
-		} else {
-			logger.Log("error", "Please provide a GCP Certificate.")
-			flag.PrintDefaults()
-			os.Exit(1)
-		}
 	}
 
 	ctx := context.Background()
