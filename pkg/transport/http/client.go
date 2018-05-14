@@ -45,7 +45,7 @@ func DecodeInternalGetProfilesResponse(_ context.Context, response *http.Respons
 
 func MakeResolveProfilesAliasesClientEndpoint(url *url.URL) endpoint.Endpoint {
 	return kithttp.NewClient(
-		"GET",
+		"POST",
 		url,
 		EncodeRequest,
 		DecodeResolveProfilesAliasesResponse,
@@ -55,7 +55,7 @@ func MakeResolveProfilesAliasesClientEndpoint(url *url.URL) endpoint.Endpoint {
 
 func MakeInternalGetProfilesClientEndpoint(url *url.URL) endpoint.Endpoint {
 	return kithttp.NewClient(
-		"GET",
+		"POST",
 		url,
 		EncodeRequest,
 		DecodeInternalGetProfilesResponse,
