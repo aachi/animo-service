@@ -10,7 +10,8 @@ import (
 	"net/url"
 
 	"github.com/go-kit/kit/endpoint"
-	khttp "github.com/go-kit/kit/transport/http"
+	kithttp "github.com/go-kit/kit/transport/http"
+	kitjwt "github.com/go-kit/kit/auth/jwt"
 
 	"github.com/revas/animo-service/pkg"
 )
@@ -43,19 +44,21 @@ func DecodeInternalGetProfilesResponse(_ context.Context, response *http.Respons
 }
 
 func MakeResolveProfilesAliasesClientEndpoint(url *url.URL) endpoint.Endpoint {
-	return khttp.NewClient(
+	return kithttp.NewClient(
 		"GET",
 		url,
 		EncodeRequest,
 		DecodeResolveProfilesAliasesResponse,
+		kithttp.ClientBefore(kitjwt.ContextToHTTP()),
 	).Endpoint()
 }
 
 func MakeInternalGetProfilesClientEndpoint(url *url.URL) endpoint.Endpoint {
-	return khttp.NewClient(
+	return kithttp.NewClient(
 		"GET",
 		url,
 		EncodeRequest,
 		DecodeInternalGetProfilesResponse,
+		kithttp.ClientBefore(kitjwt.ContextToHTTP()),
 	).Endpoint()
 }
