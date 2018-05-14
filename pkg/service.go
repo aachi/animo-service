@@ -3,7 +3,7 @@ package animo
 import "context"
 
 type Profile struct {
-	ID       string `json:"-"`
+	ID       string `json:"id"`
 	Identity string `json:"-"`
 	Alias    string `json:"alias"`
 	Name     string `json:"name"`
